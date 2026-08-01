@@ -20,6 +20,10 @@ public:
     // Rebuilds the card list from the engine's current chain. Call after any
     // external mutation (browser add) or on startup.
     void refresh();
+    // Re-reads the currently-selected pedal's live parameter values into its
+    // mini-knob display, without a full rebuild (called as the big editor's
+    // knobs move so the chain-strip card stays in sync).
+    void refreshSelectedCardKnobs();
     void setSelectedIndex(int index);
     int getSelectedIndex() const { return selectedIndex; }
 

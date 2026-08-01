@@ -15,6 +15,7 @@ public:
     ModuleEditorPanel();
 
     std::function<void(bool engaged)> onBypassChanged;
+    std::function<void()> onParameterChanged;
 
     // effect may be nullptr to show the empty-state placeholder.
     void showEffect(audio::Effect* effect);

@@ -81,6 +81,16 @@ MainComponent::MainComponent() : chainStrip(engine) {
             effect->setBypassed(!engaged);
         chainStrip.refresh();
     };
+    moduleEditor.onParameterChanged = [this] { chainStrip.refreshSelectedCardKnobs(); };
+
+    // PresetBar fires its initial selection during its own construction,
+    // before onPresetSelected above exists to catch it - so the very first
+    // preset never actually loads into the engine unless we do it here too.
+    if (auto& presets = audio::getPresetLibrary(); !presets.empty()) {
+        engine.loadPreset(presets[0]);
+        chainStrip.refresh();
+        chainStrip.setSelectedIndex(0);
+    }
 
     selectModule(chainStrip.getSelectedIndex());
 
@@ -169,6 +179,14 @@ void MainComponent::paint(juce::Graphics& g) {
                                              static_cast<float>(getHeight()), false);
     g.setGradientFill(backgroundGradient);
     g.fillAll();
+
+    // Soft radial vignette for a bit of depth, so the window doesn't read as
+    // one flat slab of colour.
+    const auto bounds = getLocalBounds().toFloat();
+    const juce::ColourGradient vignette(juce::Colours::transparentBlack, bounds.getCentreX(), bounds.getCentreY(),
+                                         juce::Colours::black.withAlpha(0.35f), bounds.getCentreX(), 0.0f, true);
+    g.setGradientFill(vignette);
+    g.fillAll();
 }
 
 void MainComponent::resized() {
@@ -199,9 +217,13 @@ void MainComponent::resized() {
 
     bounds.reduce(20, 0);
     bounds.removeFromTop(8);
-    chainStrip.setBounds(bounds.removeFromTop(150));
+    chainStrip.setBounds(bounds.removeFromTop(176));
     bounds.removeFromTop(16);
-    moduleEditor.setBounds(bounds.removeFromBottom(bounds.getHeight() - 4));
+    bounds.removeFromBottom(20);
+    // Cap the editor's height rather than stretching it to fill whatever's
+    // left - a knob row in a card that goes half-empty to the bottom of the
+    // window reads as a bug, not a design choice.
+    moduleEditor.setBounds(bounds.removeFromTop(juce::jmin(bounds.getHeight(), 360)));
 
     const int browserWidth = juce::jmin(340, getWidth() - 40);
     browserPanel.setBounds(getWidth() - (browserVisible ? browserWidth : 0), 0, browserWidth, getHeight());

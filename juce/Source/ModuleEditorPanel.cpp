@@ -58,8 +58,9 @@ void ModuleEditorPanel::showEffect(audio::Effect* effect) {
         knob.slider->setValue(param.currentValue, juce::dontSendNotification);
         if (!param.suffix.empty()) knob.slider->setTextValueSuffix(param.suffix);
         auto setValue = param.setValue;
-        knob.slider->onValueChange = [setValue, sliderPtr = knob.slider.get()] {
+        knob.slider->onValueChange = [this, setValue, sliderPtr = knob.slider.get()] {
             setValue(static_cast<float>(sliderPtr->getValue()));
+            if (onParameterChanged) onParameterChanged();
         };
 
         knob.label = std::make_unique<juce::Label>();

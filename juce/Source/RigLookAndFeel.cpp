@@ -18,6 +18,14 @@ RigLookAndFeel::RigLookAndFeel() {
     setColour(juce::TextButton::textColourOffId, juce::Colour(RigDesign::kTextPrimary));
     setColour(juce::TextButton::textColourOnId, juce::Colour(RigDesign::kTextPrimary));
     setColour(juce::ScrollBar::thumbColourId, juce::Colour(0xff4a4e58));
+    setColour(juce::ComboBox::backgroundColourId, panelColourAlt);
+    setColour(juce::ComboBox::textColourId, juce::Colour(RigDesign::kTextPrimary));
+    setColour(juce::ComboBox::outlineColourId, juce::Colour(RigDesign::kBorderColour));
+    setColour(juce::ComboBox::arrowColourId, accentColour);
+    setColour(juce::PopupMenu::backgroundColourId, juce::Colour(0xff23252b));
+    setColour(juce::PopupMenu::textColourId, juce::Colour(RigDesign::kTextPrimary));
+    setColour(juce::PopupMenu::highlightedBackgroundColourId, accentColour.withAlpha(0.35f));
+    setColour(juce::PopupMenu::highlightedTextColourId, juce::Colours::white);
 }
 
 juce::Font RigLookAndFeel::getLabelFont(juce::Label&) {
@@ -124,6 +132,27 @@ void RigLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width
                           .transformedBy(juce::AffineTransform::rotation(angle, centreX, centreY));
     g.setColour(accent);
     g.fillEllipse(juce::Rectangle<float>(5.5f, 5.5f).withCentre(tip));
+}
+
+void RigLookAndFeel::drawComboBox(juce::Graphics& g, int width, int height, bool /*isButtonDown*/,
+                                   int /*buttonX*/, int /*buttonY*/, int /*buttonW*/, int /*buttonH*/,
+                                   juce::ComboBox& box) {
+    auto bounds = juce::Rectangle<float>(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)).reduced(1.0f);
+
+    juce::ColourGradient bg(juce::Colour(RigDesign::kPanelColourAlt), bounds.getX(), bounds.getY(),
+                             juce::Colour(RigDesign::kPanelColour), bounds.getX(), bounds.getBottom(), false);
+    g.setGradientFill(bg);
+    g.fillRoundedRectangle(bounds, 6.0f);
+    g.setColour(box.findColour(juce::ComboBox::outlineColourId));
+    g.drawRoundedRectangle(bounds.reduced(0.5f), 6.0f, 1.0f);
+
+    const auto arrowZone = bounds.removeFromRight(28.0f);
+    juce::Path arrow;
+    arrow.startNewSubPath(arrowZone.getCentreX() - 5.0f, arrowZone.getCentreY() - 2.5f);
+    arrow.lineTo(arrowZone.getCentreX(), arrowZone.getCentreY() + 3.5f);
+    arrow.lineTo(arrowZone.getCentreX() + 5.0f, arrowZone.getCentreY() - 2.5f);
+    g.setColour(box.findColour(juce::ComboBox::arrowColourId));
+    g.strokePath(arrow, juce::PathStrokeType(1.8f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 }
 
 void RigLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
