@@ -30,8 +30,6 @@ input through a configurable pedalboard, styled like a vintage stompbox rig.
 - `juce/` — JUCE application: audio I/O, the pedalboard UI (`ChainStripComponent`,
   `EffectBrowserPanel`, `ModuleEditorPanel`, `PedalCard`), and the custom
   `RigLookAndFeel` / `PedalTexture` vintage styling
-- `ui/`, `ui-dist/` — an earlier React-based UI experiment, superseded by the
-  JUCE app above and no longer built or wired in; kept around but unused
 
 ## Getting started
 
