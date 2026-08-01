@@ -11,6 +11,10 @@ input through a configurable pedalboard, styled like a vintage stompbox rig.
 - Signal chain is a dynamic, user-built pedalboard: add pedals from the
   effect browser, drag to reorder in the chain strip, click a pedal's
   footswitch to bypass it, click a card to open its full controls
+- A preset dropdown in the header loads a full rig (every pedal, in order,
+  every knob) in one click — 5 tone-inspired presets ship out of the box
+  (see `cpp/include/PresetLibrary.h`); these are fan tone-matches built from
+  published gear interviews, not official/licensed artist presets
 - 14 effect types across 6 categories:
   - **Dynamics** — Noise Gate, Compressor
   - **Drive** — Boost, Overdrive, Tube Screamer, Distortion, Fuzz
@@ -70,8 +74,8 @@ on first launch.
 
 - Cabinet sim is an EQ-curve approximation, not real impulse-response
   convolution
-- No preset save/load yet — the chain resets to a default 8-pedal layout
-  (Gate → Compressor → Overdrive → Amp → Cabinet → Chorus → Delay → Reverb,
-  with Overdrive/Chorus/Delay/Reverb bypassed) on every launch
+- Presets are a fixed, built-in library — no saving your own custom chain as
+  a new preset yet, and no persistence between launches (chain resets to a
+  default 8-pedal layout on every launch unless you pick a preset again)
 - Parameter updates from the UI to the audio thread aren't atomic-wrapped;
   fine for knob turns, not hardened against worst-case tearing
