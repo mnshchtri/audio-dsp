@@ -50,10 +50,10 @@ public:
 
     std::vector<ParamInfo> getParameters() override {
         return {
-            { "Time", 20.0f, 1200.0f, 350.0f, " ms", [this](float v) { setTimeMs(v); } },
-            { "F.back", 0.0f, 0.95f, 0.35f, "", [this](float v) { setFeedback(v); } },
-            { "Mix", 0.0f, 1.0f, 0.3f, "", [this](float v) { setMix(v); } },
-            { "Damp", 500.0f, 18000.0f, 6000.0f, " Hz", [this](float v) { setDampingHz(v); } },
+            { "Time", 20.0f, 1200.0f, timeMs, " ms", [this](float v) { setTimeMs(v); } },
+            { "F.back", 0.0f, 0.95f, feedback, "", [this](float v) { setFeedback(v); } },
+            { "Mix", 0.0f, 1.0f, mix, "", [this](float v) { setMix(v); } },
+            { "Damp", 500.0f, 18000.0f, dampingFreq, " Hz", [this](float v) { setDampingHz(v); } },
         };
     }
 

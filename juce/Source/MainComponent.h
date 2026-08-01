@@ -6,6 +6,7 @@
 #include "GuitarRigEngine.h"
 #include "LevelMeter.h"
 #include "ModuleEditorPanel.h"
+#include "PresetBar.h"
 #include "RigLookAndFeel.h"
 #include <atomic>
 
@@ -46,6 +47,7 @@ private:
 
     juce::Label titleLabel;
     juce::Label subtitleLabel;
+    PresetBar presetBar;
     juce::TextButton audioSettingsButton;
     juce::Label inputLevelLabel;
     LevelMeter inputLevelMeter;

@@ -24,7 +24,7 @@ public:
         for (auto& f : presenceFilters) f.reset();
     }
 
-    void setDriveDb(float db) { driveLinear = dbToLinear(db); }
+    void setDriveDb(float db) { driveDb = db; driveLinear = dbToLinear(db); }
     void setTone(float normalized) {
         tone = std::clamp(normalized, 0.0f, 1.0f);
         toneFreq = 1000.0f + tone * 6000.0f;
@@ -53,9 +53,9 @@ public:
 
     std::vector<ParamInfo> getParameters() override {
         return {
-            { "Drive", 0.0f, 40.0f, 20.0f, " dB", [this](float v) { setDriveDb(v); } },
-            { "Tone", 0.0f, 1.0f, 0.5f, "", [this](float v) { setTone(v); } },
-            { "Level", 0.0f, 1.0f, 0.55f, "", [this](float v) { setLevel(v); } },
+            { "Drive", 0.0f, 40.0f, driveDb, " dB", [this](float v) { setDriveDb(v); } },
+            { "Tone", 0.0f, 1.0f, tone, "", [this](float v) { setTone(v); } },
+            { "Level", 0.0f, 1.0f, levelLinear, "", [this](float v) { setLevel(v); } },
         };
     }
 
@@ -68,7 +68,8 @@ private:
     }
 
     double sampleRate = 44100.0;
-    float driveLinear = 10.0f;
+    float driveDb = 20.0f;
+    float driveLinear = dbToLinear(20.0f);
     float tone = 0.5f;
     float toneFreq = 4000.0f;
     float levelLinear = 0.55f;

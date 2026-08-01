@@ -53,7 +53,7 @@ public:
 
     std::vector<ParamInfo> getParameters() override {
         return {
-            { "Bright", 0.0f, 1.0f, 0.5f, "", [this](float v) { setBrightness(v); } },
+            { "Bright", 0.0f, 1.0f, brightness, "", [this](float v) { setBrightness(v); } },
         };
     }
 

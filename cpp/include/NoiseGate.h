@@ -52,7 +52,7 @@ public:
 
     std::vector<ParamInfo> getParameters() override {
         return {
-            { "Thresh", -80.0f, -10.0f, -50.0f, " dB", [this](float v) { setThresholdDb(v); } },
+            { "Thresh", -80.0f, -10.0f, thresholdDb, " dB", [this](float v) { setThresholdDb(v); } },
         };
     }
 

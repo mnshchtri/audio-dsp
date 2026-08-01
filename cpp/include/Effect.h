@@ -9,12 +9,15 @@ namespace audio {
 constexpr int kMaxChannels = 2;
 
 // Describes one user-facing knob so a UI can build controls generically
-// without hand-wiring a panel per effect type.
+// without hand-wiring a panel per effect type. currentValue reflects the
+// effect's live state at the moment getParameters() is called (not a fixed
+// factory default), so a UI can safely use it to set initial knob position
+// without re-applying it and clobbering whatever a preset or prior edit set.
 struct ParamInfo {
     std::string label;
     float minValue;
     float maxValue;
-    float defaultValue;
+    float currentValue;
     std::string suffix;
     std::function<void(float)> setValue;
 };

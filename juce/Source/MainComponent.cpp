@@ -1,4 +1,5 @@
 #include "MainComponent.h"
+#include "PresetLibrary.h"
 #include "RigDesign.h"
 #include <cstring>
 
@@ -14,6 +15,15 @@ MainComponent::MainComponent() : chainStrip(engine) {
     subtitleLabel.setFont(juce::FontOptions(12.5f));
     subtitleLabel.setColour(juce::Label::textColourId, juce::Colour(RigDesign::kTextSecondary));
     addAndMakeVisible(subtitleLabel);
+
+    presetBar.onPresetSelected = [this](int index) {
+        auto& presets = audio::getPresetLibrary();
+        if (index < 0 || index >= static_cast<int>(presets.size())) return;
+        engine.loadPreset(presets[static_cast<size_t>(index)]);
+        chainStrip.refresh();
+        chainStrip.setSelectedIndex(0);
+    };
+    addAndMakeVisible(presetBar);
 
     audioSettingsButton.setButtonText("Audio Settings...");
     audioSettingsButton.onClick = [this] { openAudioSettings(); };
@@ -183,6 +193,9 @@ void MainComponent::resized() {
     auto inputKnobArea = masterArea.removeFromRight(72);
     inputGainLabel.setBounds(inputKnobArea.removeFromTop(13));
     inputGainSlider.setBounds(inputKnobArea);
+
+    auto presetRow = bounds.removeFromTop(58).reduced(20, 6);
+    presetBar.setBounds(presetRow.removeFromLeft(juce::jmin(480, presetRow.getWidth())));
 
     bounds.reduce(20, 0);
     bounds.removeFromTop(8);

@@ -28,7 +28,7 @@ public:
     void setRatio(float r) { ratio = std::max(1.0f, r); }
     void setAttackMs(float ms) { attackMs = ms; for (auto& env : envelopes) env.setAttackMs(ms); }
     void setReleaseMs(float ms) { releaseMs = ms; for (auto& env : envelopes) env.setReleaseMs(ms); }
-    void setMakeupDb(float db) { makeupLinear = dbToLinear(db); }
+    void setMakeupDb(float db) { makeupDb = db; makeupLinear = dbToLinear(db); }
 
     void process(float* const* channelData, int numChannels, int numSamples) override {
         if (bypassed) return;
@@ -52,11 +52,11 @@ public:
 
     std::vector<ParamInfo> getParameters() override {
         return {
-            { "Thresh", -40.0f, 0.0f, -18.0f, " dB", [this](float v) { setThresholdDb(v); } },
-            { "Ratio", 1.0f, 20.0f, 4.0f, ":1", [this](float v) { setRatio(v); } },
-            { "Attack", 0.5f, 50.0f, 8.0f, " ms", [this](float v) { setAttackMs(v); } },
-            { "Release", 20.0f, 500.0f, 120.0f, " ms", [this](float v) { setReleaseMs(v); } },
-            { "Makeup", 0.0f, 24.0f, 3.0f, " dB", [this](float v) { setMakeupDb(v); } },
+            { "Thresh", -40.0f, 0.0f, thresholdDb, " dB", [this](float v) { setThresholdDb(v); } },
+            { "Ratio", 1.0f, 20.0f, ratio, ":1", [this](float v) { setRatio(v); } },
+            { "Attack", 0.5f, 50.0f, attackMs, " ms", [this](float v) { setAttackMs(v); } },
+            { "Release", 20.0f, 500.0f, releaseMs, " ms", [this](float v) { setReleaseMs(v); } },
+            { "Makeup", 0.0f, 24.0f, makeupDb, " dB", [this](float v) { setMakeupDb(v); } },
         };
     }
 
@@ -66,7 +66,8 @@ private:
     float ratio = 4.0f;
     float attackMs = 8.0f;
     float releaseMs = 120.0f;
-    float makeupLinear = 1.0f;
+    float makeupDb = 3.0f;
+    float makeupLinear = dbToLinear(3.0f);
     std::array<EnvelopeFollower, kMaxChannels> envelopes;
 };
 

@@ -38,6 +38,8 @@ public:
         if (index < effects.size()) effects.erase(effects.begin() + static_cast<long>(index));
     }
 
+    void clear() { effects.clear(); }
+
     void moveEffect(size_t fromIndex, size_t toIndex) {
         if (fromIndex >= effects.size() || toIndex >= effects.size() || fromIndex == toIndex) return;
         auto effect = std::move(effects[fromIndex]);

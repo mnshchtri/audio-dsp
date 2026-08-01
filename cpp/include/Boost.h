@@ -21,7 +21,7 @@ public:
         for (auto& f : highShelf) f.reset();
     }
 
-    void setGainDb(float db) { gainLinear = dbToLinear(db); }
+    void setGainDb(float db) { gainDb = db; gainLinear = dbToLinear(db); }
     void setTilt(float normalized) { tilt = std::clamp(normalized, 0.0f, 1.0f); updateTilt(); }
     void setLevel(float normalized) { levelLinear = std::clamp(normalized, 0.0f, 1.0f); }
 
@@ -45,9 +45,9 @@ public:
 
     std::vector<ParamInfo> getParameters() override {
         return {
-            { "Gain", 0.0f, 20.0f, 8.0f, " dB", [this](float v) { setGainDb(v); } },
-            { "Tilt", 0.0f, 1.0f, 0.5f, "", [this](float v) { setTilt(v); } },
-            { "Level", 0.0f, 1.0f, 0.8f, "", [this](float v) { setLevel(v); } },
+            { "Gain", 0.0f, 20.0f, gainDb, " dB", [this](float v) { setGainDb(v); } },
+            { "Tilt", 0.0f, 1.0f, tilt, "", [this](float v) { setTilt(v); } },
+            { "Level", 0.0f, 1.0f, levelLinear, "", [this](float v) { setLevel(v); } },
         };
     }
 
@@ -59,7 +59,8 @@ private:
     }
 
     double sampleRate = 44100.0;
-    float gainLinear = 2.5f;
+    float gainDb = 8.0f;
+    float gainLinear = dbToLinear(8.0f);
     float tilt = 0.5f;
     float levelLinear = 0.8f;
     std::array<Biquad, kMaxChannels> lowShelf;

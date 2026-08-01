@@ -23,10 +23,22 @@ public:
         for (auto& stage : trebleFilters) stage.reset();
     }
 
-    void setGainDb(float db) { gainLinear = dbToLinear(db); }
-    void setBass(float normalized) { bassDb = (std::clamp(normalized, 0.0f, 1.0f) - 0.5f) * 24.0f; updateToneStack(); }
-    void setMid(float normalized) { midDb = (std::clamp(normalized, 0.0f, 1.0f) - 0.5f) * 24.0f; updateToneStack(); }
-    void setTreble(float normalized) { trebleDb = (std::clamp(normalized, 0.0f, 1.0f) - 0.5f) * 24.0f; updateToneStack(); }
+    void setGainDb(float db) { gainDb = db; gainLinear = dbToLinear(db); }
+    void setBass(float normalized) {
+        bass = std::clamp(normalized, 0.0f, 1.0f);
+        bassDb = (bass - 0.5f) * 24.0f;
+        updateToneStack();
+    }
+    void setMid(float normalized) {
+        mid = std::clamp(normalized, 0.0f, 1.0f);
+        midDb = (mid - 0.5f) * 24.0f;
+        updateToneStack();
+    }
+    void setTreble(float normalized) {
+        treble = std::clamp(normalized, 0.0f, 1.0f);
+        trebleDb = (treble - 0.5f) * 24.0f;
+        updateToneStack();
+    }
     void setLevel(float normalized) { levelLinear = std::clamp(normalized, 0.0f, 1.0f); }
 
     void process(float* const* channelData, int numChannels, int numSamples) override {
@@ -51,11 +63,11 @@ public:
 
     std::vector<ParamInfo> getParameters() override {
         return {
-            { "Gain", -12.0f, 24.0f, 6.0f, " dB", [this](float v) { setGainDb(v); } },
-            { "Bass", 0.0f, 1.0f, 0.5f, "", [this](float v) { setBass(v); } },
-            { "Mid", 0.0f, 1.0f, 0.5f, "", [this](float v) { setMid(v); } },
-            { "Treble", 0.0f, 1.0f, 0.5f, "", [this](float v) { setTreble(v); } },
-            { "Level", 0.0f, 1.0f, 0.6f, "", [this](float v) { setLevel(v); } },
+            { "Gain", -12.0f, 24.0f, gainDb, " dB", [this](float v) { setGainDb(v); } },
+            { "Bass", 0.0f, 1.0f, bass, "", [this](float v) { setBass(v); } },
+            { "Mid", 0.0f, 1.0f, mid, "", [this](float v) { setMid(v); } },
+            { "Treble", 0.0f, 1.0f, treble, "", [this](float v) { setTreble(v); } },
+            { "Level", 0.0f, 1.0f, levelLinear, "", [this](float v) { setLevel(v); } },
         };
     }
 
@@ -75,7 +87,11 @@ private:
     }
 
     double sampleRate = 44100.0;
-    float gainLinear = 3.0f;
+    float gainDb = 6.0f;
+    float gainLinear = dbToLinear(6.0f);
+    float bass = 0.5f;
+    float mid = 0.5f;
+    float treble = 0.5f;
     float bassDb = 0.0f;
     float midDb = 0.0f;
     float trebleDb = 0.0f;

@@ -3,6 +3,7 @@
 #include "DspUtils.h"
 #include "EffectChain.h"
 #include "EffectFactory.h"
+#include "Preset.h"
 
 namespace audio {
 
@@ -50,6 +51,26 @@ public:
 
     void removeModule(size_t index) { chain.removeEffect(index); }
     void moveModule(size_t fromIndex, size_t toIndex) { chain.moveEffect(fromIndex, toIndex); }
+
+    void loadPreset(const Preset& preset) {
+        chain.clear();
+        for (auto& moduleSpec : preset.modules) {
+            auto effect = createEffect(moduleSpec.type);
+            effect->prepare(sampleRate);
+            effect->setBypassed(moduleSpec.bypassed);
+            for (auto& param : effect->getParameters()) {
+                float value = param.currentValue;
+                for (auto& override : moduleSpec.paramOverrides) {
+                    if (override.first == param.label) {
+                        value = override.second;
+                        break;
+                    }
+                }
+                param.setValue(value);
+            }
+            chain.addEffect(std::move(effect));
+        }
+    }
 
     EffectChain& getChain() { return chain; }
 

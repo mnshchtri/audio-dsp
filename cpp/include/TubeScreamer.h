@@ -24,7 +24,10 @@ public:
         for (auto& f : toneFilters) f.reset();
     }
 
-    void setDrive(float normalized) { driveLinear = 1.0f + std::clamp(normalized, 0.0f, 1.0f) * 40.0f; }
+    void setDrive(float normalized) {
+        drive = std::clamp(normalized, 0.0f, 1.0f);
+        driveLinear = 1.0f + drive * 40.0f;
+    }
     void setTone(float normalized) {
         tone = std::clamp(normalized, 0.0f, 1.0f);
         toneFreq = 600.0f + tone * 5000.0f;
@@ -53,9 +56,9 @@ public:
 
     std::vector<ParamInfo> getParameters() override {
         return {
-            { "Drive", 0.0f, 1.0f, 0.4f, "", [this](float v) { setDrive(v); } },
-            { "Tone", 0.0f, 1.0f, 0.5f, "", [this](float v) { setTone(v); } },
-            { "Level", 0.0f, 1.0f, 0.6f, "", [this](float v) { setLevel(v); } },
+            { "Drive", 0.0f, 1.0f, drive, "", [this](float v) { setDrive(v); } },
+            { "Tone", 0.0f, 1.0f, tone, "", [this](float v) { setTone(v); } },
+            { "Level", 0.0f, 1.0f, levelLinear, "", [this](float v) { setLevel(v); } },
         };
     }
 
@@ -66,6 +69,7 @@ private:
     }
 
     double sampleRate = 44100.0;
+    float drive = 0.4f;
     float driveLinear = 17.0f;
     float tone = 0.5f;
     float toneFreq = 3000.0f;

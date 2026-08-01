@@ -120,9 +120,9 @@ public:
 
     std::vector<ParamInfo> getParameters() override {
         return {
-            { "Size", 0.0f, 1.0f, 0.5f, "", [this](float v) { setRoomSize(v); } },
-            { "Damp", 0.0f, 1.0f, 0.3f, "", [this](float v) { setDamping(v); } },
-            { "Mix", 0.0f, 1.0f, 0.25f, "", [this](float v) { setMix(v); } },
+            { "Size", 0.0f, 1.0f, roomSize, "", [this](float v) { setRoomSize(v); } },
+            { "Damp", 0.0f, 1.0f, damping, "", [this](float v) { setDamping(v); } },
+            { "Mix", 0.0f, 1.0f, mix, "", [this](float v) { setMix(v); } },
         };
     }
 

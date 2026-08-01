@@ -25,7 +25,10 @@ public:
         for (auto& f : toneFilters) f.reset();
     }
 
-    void setFuzz(float normalized) { fuzzLinear = 1.0f + std::clamp(normalized, 0.0f, 1.0f) * 120.0f; }
+    void setFuzz(float normalized) {
+        fuzz = std::clamp(normalized, 0.0f, 1.0f);
+        fuzzLinear = 1.0f + fuzz * 120.0f;
+    }
     void setTone(float normalized) {
         tone = std::clamp(normalized, 0.0f, 1.0f);
         toneFreq = 900.0f + tone * 6000.0f;
@@ -60,14 +63,15 @@ public:
 
     std::vector<ParamInfo> getParameters() override {
         return {
-            { "Fuzz", 0.0f, 1.0f, 0.6f, "", [this](float v) { setFuzz(v); } },
-            { "Tone", 0.0f, 1.0f, 0.5f, "", [this](float v) { setTone(v); } },
-            { "Level", 0.0f, 1.0f, 0.5f, "", [this](float v) { setLevel(v); } },
+            { "Fuzz", 0.0f, 1.0f, fuzz, "", [this](float v) { setFuzz(v); } },
+            { "Tone", 0.0f, 1.0f, tone, "", [this](float v) { setTone(v); } },
+            { "Level", 0.0f, 1.0f, levelLinear, "", [this](float v) { setLevel(v); } },
         };
     }
 
 private:
     double sampleRate = 44100.0;
+    float fuzz = 0.6f;
     float fuzzLinear = 73.0f;
     float tone = 0.5f;
     float toneFreq = 3900.0f;

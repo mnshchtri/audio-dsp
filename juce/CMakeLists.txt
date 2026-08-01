@@ -28,6 +28,8 @@ target_sources(AudioDSPApp PRIVATE
     Source/ModuleEditorPanel.h
     Source/PedalCard.cpp
     Source/PedalCard.h
+    Source/PresetBar.cpp
+    Source/PresetBar.h
     Source/RigDesign.h
     Source/RigLookAndFeel.cpp
     Source/RigLookAndFeel.h

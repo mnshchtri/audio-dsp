@@ -51,9 +51,9 @@ public:
 
     std::vector<ParamInfo> getParameters() override {
         return {
-            { "Rate", 0.05f, 12.0f, 4.0f, " Hz", [this](float v) { setRateHz(v); } },
-            { "Depth", 0.0f, 1.0f, 0.6f, "", [this](float v) { setDepth(v); } },
-            { "Wave", 0.0f, 1.0f, 0.0f, "", [this](float v) { setWave(v); } },
+            { "Rate", 0.05f, 12.0f, rateHz, " Hz", [this](float v) { setRateHz(v); } },
+            { "Depth", 0.0f, 1.0f, depth, "", [this](float v) { setDepth(v); } },
+            { "Wave", 0.0f, 1.0f, wave, "", [this](float v) { setWave(v); } },
         };
     }
 

@@ -51,14 +51,16 @@ void ModuleEditorPanel::showEffect(audio::Effect* effect) {
         knob.slider->setColour(juce::Slider::rotarySliderFillColourId, accent);
         const double step = (param.maxValue - param.minValue) > 5.0 ? 0.1 : 0.001;
         knob.slider->setRange(param.minValue, param.maxValue, step);
-        knob.slider->setDoubleClickReturnValue(true, param.defaultValue);
-        knob.slider->setValue(param.defaultValue, juce::dontSendNotification);
+        // Reflects the effect's live value, not a hardcoded factory default -
+        // reapplying it here would be a no-op for a fresh effect but would
+        // silently clobber a preset-loaded or previously-tweaked value.
+        knob.slider->setDoubleClickReturnValue(true, param.currentValue);
+        knob.slider->setValue(param.currentValue, juce::dontSendNotification);
         if (!param.suffix.empty()) knob.slider->setTextValueSuffix(param.suffix);
         auto setValue = param.setValue;
         knob.slider->onValueChange = [setValue, sliderPtr = knob.slider.get()] {
             setValue(static_cast<float>(sliderPtr->getValue()));
         };
-        setValue(param.defaultValue);
 
         knob.label = std::make_unique<juce::Label>();
         knob.label->setText(param.label, juce::dontSendNotification);

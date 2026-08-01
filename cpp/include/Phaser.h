@@ -87,10 +87,10 @@ public:
 
     std::vector<ParamInfo> getParameters() override {
         return {
-            { "Rate", 0.05f, 5.0f, 0.5f, " Hz", [this](float v) { setRateHz(v); } },
-            { "Depth", 0.0f, 1.0f, 0.7f, "", [this](float v) { setDepth(v); } },
-            { "F.back", 0.0f, 0.9f, 0.4f, "", [this](float v) { setFeedback(v); } },
-            { "Mix", 0.0f, 1.0f, 0.5f, "", [this](float v) { setMix(v); } },
+            { "Rate", 0.05f, 5.0f, rateHz, " Hz", [this](float v) { setRateHz(v); } },
+            { "Depth", 0.0f, 1.0f, depth, "", [this](float v) { setDepth(v); } },
+            { "F.back", 0.0f, 0.9f, feedback, "", [this](float v) { setFeedback(v); } },
+            { "Mix", 0.0f, 1.0f, mix, "", [this](float v) { setMix(v); } },
         };
     }
 
