@@ -1,71 +1,79 @@
-# Audio DSP Standalone JUCE App
+# Audio DSP Guitar Rig
 
-This project is a pure C++ standalone synth application built with JUCE.
+A standalone JUCE desktop app that processes live guitar (or any line/mic)
+input through a configurable pedalboard, styled like a vintage stompbox rig.
+
+## What it does
+
+- Registers directly as an audio device callback and processes real input
+  audio with minimal latency — pick your interface in-app via **Audio
+  Settings...**
+- Signal chain is a dynamic, user-built pedalboard: add pedals from the
+  effect browser, drag to reorder in the chain strip, click a pedal's
+  footswitch to bypass it, click a card to open its full controls
+- 14 effect types across 6 categories:
+  - **Dynamics** — Noise Gate, Compressor
+  - **Drive** — Boost, Overdrive, Tube Screamer, Distortion, Fuzz
+  - **Amp** — Amp (preamp + tone stack), Cabinet sim (EQ-curve based, no IRs)
+  - **Modulation** — Chorus, Phaser, Tremolo
+  - **Time** — Delay
+  - **Reverb** — Reverb (Schroeder-style comb/allpass)
+- UI is drawn as hammertone-textured pedal enclosures with knurled knobs,
+  chrome footswitches, and LED jewels — all original procedural vector art
+  (gradients/paths/generated noise), no scanned or scraped artwork
 
 ## Structure
 
-- `cpp/` — C++ synth engine implementation
-- `juce/` — JUCE application wrapper and UI
-
-## Goals
-
-- implement a simple synth oscillator and envelope in C++
-- run as a standalone JUCE desktop application
-- provide GUI controls for frequency, gain, waveform, and envelope
+- `cpp/` — portable C++17 DSP engine (no JUCE dependency): each effect is a
+  self-contained class exposing `getParameters()` for reflection, wired
+  together by `GuitarRigEngine` / `EffectChain` / `EffectFactory`
+- `juce/` — JUCE application: audio I/O, the pedalboard UI (`ChainStripComponent`,
+  `EffectBrowserPanel`, `ModuleEditorPanel`, `PedalCard`), and the custom
+  `RigLookAndFeel` / `PedalTexture` vintage styling
+- `ui/`, `ui-dist/` — an earlier React-based UI experiment, superseded by the
+  JUCE app above and no longer built or wired in; kept around but unused
 
 ## Getting started
 
-### 1. Install dependencies
+### Dependencies
 
 - CMake 3.16+
 - A C++17 compiler (Clang/GCC/MSVC)
-- JUCE 7.x installed as a CMake package
+- [JUCE](https://github.com/juce-framework/JUCE) checked out locally (JUCE 8/9
+  recommended — older releases may not build against current macOS SDKs)
 
-### 2. Build C++ engine
+### Build
 
 ```bash
+git clone --depth 1 --branch 9.0.0 https://github.com/juce-framework/JUCE.git ~/Developer/JUCE
+
 mkdir -p build && cd build
-cmake ..
-cmake --build .
+cmake -DJUCE_DIR=~/Developer/JUCE ..
+cmake --build . --target AudioDSPApp
 ```
 
-### 3. Build JUCE standalone app
+`JUCE_DIR` must point at your JUCE checkout (the directory containing JUCE's
+own top-level `CMakeLists.txt`); it's pulled in via `add_subdirectory`, not
+`find_package`, so no separate JUCE install/build step is needed.
 
-```bash
-mkdir -p build && cd build
-cmake -DJUCE_DIR=/path/to/JUCE ..
-cmake --build .
+The built app lands at:
+
+```
+build/juce/AudioDSPApp_artefacts/Debug/Audio DSP Guitar Rig.app
 ```
 
-If your JUCE installation is a CMake package, `JUCE_DIR` must point to the directory containing `JUCEConfig.cmake`.
+### Run
 
-For example:
+Launch the app, click **Audio Settings...** to pick your input interface and
+output device, then play. macOS will prompt for microphone/input permission
+on first launch.
 
-```bash
-cmake -DJUCE_DIR=/Users/mnsh/Developer/JUCE/cmake/juce ..
-```
+## Known limitations
 
-If that still fails, use:
-
-```bash
-cmake -DCMAKE_PREFIX_PATH=/Users/mnsh/Developer/JUCE/cmake/juce ..
-```
-
-## Notes
-
-- The React UI has been removed in favor of a pure C++ JUCE app.
-- The plugin wrapper was replaced with a standalone application.
-
-
-The error you saw is because CMake could not locate the JUCE package, so it failed before creating `CMakeCache.txt`.
-
-## Notes
-
-This scaffold provides a simple synth engine in C++. It does not include a full VST host or plugin framework.
-For a production plugin, integrate this code with a plugin framework like JUCE, iPlug2, or the Steinberg VST3 SDK.
-
-## Next steps
-
-1. Add host/plugin wrapper using VST3 or JUCE
-2. Expose parameters to the UI via a bridge layer
-3. Render the built React app in the plugin's UI view
+- Cabinet sim is an EQ-curve approximation, not real impulse-response
+  convolution
+- No preset save/load yet — the chain resets to a default 8-pedal layout
+  (Gate → Compressor → Overdrive → Amp → Cabinet → Chorus → Delay → Reverb,
+  with Overdrive/Chorus/Delay/Reverb bypassed) on every launch
+- Parameter updates from the UI to the audio thread aren't atomic-wrapped;
+  fine for knob turns, not hardened against worst-case tearing
